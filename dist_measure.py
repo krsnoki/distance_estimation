@@ -5,9 +5,9 @@ import cv2
 
 #Define object specific variables  
 dist = 0
-focal = 450
-pixels = 30
-width = 4
+focal = 1.7
+pixels = 720
+width_pixels = 4 * 1280
 
 
 #find the distance from then camera
@@ -16,7 +16,7 @@ def get_dist(rectange_params,image):
     pixels = rectange_params[1][0]
     print(pixels)
     #calculate distance
-    dist = (width*focal)/pixels
+    dist = ((width_pixels*focal)/pixels)*100
     print("Distance: ", dist, "cm\n")
     #Wrtie n the image
     image = cv2.putText(image, 'Distance from Camera in CM :', org, font,  
@@ -51,15 +51,27 @@ while True:
     hsv_img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 
-    #predefined mask for green colour detection
-    lower = np.array([179, 61, 0])
-    upper = np.array([11, 33, 255])
-    mask = cv2.inRange(hsv_img, lower, upper)
+    # #predefined mask for green colour detection
+    # lower = np.array([179, 61, 0])
+    # upper = np.array([11, 33, 255])
+    # mask = cv2.inRange(hsv_img, lower, upper)
      
+    # Define the lower and upper bounds for red in HSV
+    lower_red_1 = np.array([0, 70, 50])  # Lower bound for red hue
+    upper_red_1 = np.array([10, 255, 255])  # Upper bound for red hue
+
+    lower_red_2 = np.array([170, 70, 50])  # Lower bound for red hue (wrap-around)
+    upper_red_2 = np.array([180, 255, 255])  # Upper bound for red hue (wrap-around)
+
+    # Create the masks
+    mask1 = cv2.inRange(hsv_img, lower_red_1, upper_red_1)
+    mask2 = cv2.inRange(hsv_img, lower_red_2, upper_red_2)
+
+    # Combine the masks to get the final mask for red
+    mask_red = cv2.bitwise_or(mask1, mask2)
 
 
-    #Remove Extra garbage from image
-    d_img = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel,iterations = 5)
+    d_img = cv2.morphologyEx(mask_red, cv2.MORPH_OPEN, kernel,iterations = 5)
 
 
     #find the histogram

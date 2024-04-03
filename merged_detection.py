@@ -91,7 +91,7 @@ while True:
             img = get_dist(rect, pixels, img)
 
     # Resize images and display
-    final_img = resize_final_img(300, 300, mask, d_img)
+    final_img = resize_final_img(300, 300, mask,  d_img)
     cv2.imshow('Object Dist Measure', final_img)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
